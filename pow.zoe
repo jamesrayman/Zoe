@@ -1,0 +1,12 @@
+'Calculate powers of 2'
+
+read n
+n := +n
+
+writeln 'The first ' + n + ' powers of 2 are:'
+
+i := 0
+{
+    writeln 2 ** i
+    i := i + 1
+} * n

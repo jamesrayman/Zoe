@@ -1,0 +1,160 @@
+This explanation will focus mainly on the syntax and semantics of Zoe
+rather than explaining `pascal.zoe`. Also, I wrote the Zoe interpreter a
+year ago, so this explanation may not be entirely correct.
+
+First off, Zoe is a dynamically-typed imperative language, like Python.
+As such, the core components of Zoe are its data types, literals,
+expressions, and statements.
+
+Let's look at data types first. There are 5 types of objects in Zoe:
+
+INT     Integer of unbounded size
+STRING  String
+LIST    List of other objects
+BLOCK   Zoe program
+SYMBOL  Reference to an object in the symbol table
+
+The symbol table is a map from symbols to non-symbolic objects. Most
+operators in Zoe do not operate on symbols, so symbols will typically be
+cast to non-symbolic objects by looking them up in the symbol table when
+used with such operators.
+
+There are no booleans in Zoe, but as convention, 0, the empty list, the
+empty string, and the empty block are falsy, and every other value is
+truthy. Also, canonical true is 1 and canonical false is 0. These values
+are returned by the comparison operators, and are represented with the
+keywords "true" and "false".
+
+Now, let's look at literals.
+
+INT     Any string of decimal digits, e.g. 1301
+STRING  Any string surrounded by single quotes, e.g. 'Hello, world!'.
+        String literals can be multiline. Note that there are no escape
+        sequences, so it is not possible to put a single quote in a
+        string literal.
+LIST    A comma separated list of expressions enclosed in brackets, e.g.
+        [1+2, hello, 'ab]']. List literals can be multiline.
+BLOCK   A list of Zoe statements enclosed by braces, e.g.
+        { a := 1 + 2; write a }. Block literals can be multiline.
+SYMBOL  A string of alphanumeric characters and underscores that does
+        not start with a number and is not one of the following
+        keywords:
+            true
+            false
+            read
+            readln
+            write
+            writeln
+
+Now, let's look at expressions, specifically operators. The operators
+below are grouped by precedence, from high to low. As expected,
+parentheses override precedence. Every operator is left-associative.
+
+v @ i       Returns the i-th element of the list, string, or symbol v.
+            If v is symbolic and i is non-symbolic, then v @ i is
+            symbolic. The i-th element of a sting is a 1 character long
+            string.
+
+#v          Returns the number of elements in the list or string v.
+
+x ** y      Exponentiation.
+
++x          Convert x to an integer. x must be a string or an integer.
+-x          Convert x to an integer and negate it. x must be an integer
+            or string.
+~x          Return 1 if x is falsy and 0 otherwise.
+
+x * y       Multiplication. If x is an integer and y is a string, list,
+            or block, x * y is y repeated x times
+x / y       Division rounded towards 0.
+x % y       Modulus. The following identity is satisfied:
+                (x/y)*y + (x%y) = x
+
+x + y       Addition if x and y are both integers. Concatenation if x
+            and y are both strings, lists, or blocks.
+x - y       Subtraction.
+
+x < y       Less than?
+x > y       Greater than?
+x <= y      Less than or equal to?
+x >= y      Greater than or equal to?
+
+x = y       Equal to?
+x /= y      Not equal to?
+
+x /\ y      Return x if x is falsy, y otherwise.
+
+x \/ y      Return x if x is truthy, y otherwise.
+
+A Zoe program is a list of statements. Statements are typically
+delimited by newlines and semicolons found outside string literals.
+There is one exception to this rule: A newline followed by a binary
+operator other than PLUS or MINUS does not delimit a statement.
+
+There are 7 types of statements:
+
+EMPTY           e.g. a line of whitespace. This type of statement does
+                nothing.
+EXPR            An expression. Evaluate the expression and if it is a block,
+                execute it. Otherwise, do nothing. This means string
+                literals (e.g.) on their own line are parsed as comments.
+EXPR := EXPR    Assignment. In the symbol table, assign the (symbolic)
+                expression on the left a value of the (non-symbolic)
+                expression on the right.
+read EXPR       Read a word from the input and assign it as the value of
+                EXPR (symbolic).
+readln EXPR     Read a line from the input and assign it as the value of
+                EXPR (symbolic).
+write EXPR      Evaluate EXPR (non-symbolic) and write it to stdout.
+writeln EXPR    Evaluate EXPR (non-symbolic) and write it to stdout,
+                followed by a newline.
+
+
+That's it! Notice how functions, if statements, and loops are not part
+of the core semantics of Zoe, but they are still expressible! For
+example, functions emerge from assigning blocks:
+
+    say_hello := {
+        writeln 'Hello'
+    }
+
+    say_hello
+
+There is no way to pass parameters to functions, however.
+
+If statements emerge from using /\ and \/ with blocks:
+
+    x = 0 /\ {
+        writeln 'x is zero'
+    }
+    \/ x > 0 /\ {
+        writeln 'x is positive'
+    }
+    \/ {
+        writeln 'x is negative'
+    }
+
+Repeat loops emerge from multiplication with blocks:
+
+    5 * {
+        writeln 'This statement is written 5 times'
+    }
+
+While loops are a little clunkier. They emerge from conditionally recursive functions.
+
+    x := 5
+    step_down := {
+        x > 0 /\ {
+            writeln x
+            x := x - 1
+            step_down
+        }
+    }
+    step_down
+
+    writeln 'Blast off!'
+
+
+And that's it! From here, it is easy to prove that Zoe is
+Turing-complete, and only slightly more difficult to write a program
+that generates Pascal's triangle.

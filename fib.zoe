@@ -1,0 +1,9 @@
+'Fibonacci numbers'
+
+fib := [0, 1]
+
+98 * {
+    fib := fib + [fib @ -1 + fib @ -2]
+}
+
+writeln fib

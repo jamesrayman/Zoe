@@ -1,0 +1,7 @@
+'FizzBuzz version 2'
+
+i := 1
+{
+    writeln (i % 3 = 0) * 'Fizz' + (i % 5 = 0) * 'Buzz' \/ i
+    i := i + 1
+} * 100

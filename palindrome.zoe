@@ -1,0 +1,26 @@
+'Tests to see if the input is a palindrome'
+
+readln s
+
+'Remove the newline from s'
+i := 0
+t := ''
+{
+    t := t + s @ i
+    i := i + 1
+} * (#s - 1)
+s := t
+
+i := 0
+pal := true
+{
+    ~(s @ i = s @ (-i-1)) * { pal := false }
+    i := i + 1
+} * #s
+
+pal /\ {
+    writeln s + ' is a palindrome.'
+}
+\/ {
+    writeln s + ' is not a palindrome.'
+}

@@ -1,0 +1,45 @@
+'
+    Sort a list with insertion sort
+    Type "end" to end the input
+'
+
+list := []
+read_loop := {
+    read x
+    x /= 'end' /\ {
+        list := list + [x]
+        read_loop
+    }
+}
+
+read_loop
+
+
+swap := {
+    tmp := list @ j
+    list @ j := list @ (j-1)
+    list @ (j-1) := tmp
+}
+
+i := 1
+{
+    j := i
+    swap_loop := {
+        j >= 1 /\ list @ j < list @ (j-1) /\ {
+            swap
+            j := j - 1
+            swap_loop
+        }
+    }
+    swap_loop
+    i := i + 1
+} * (#list - 1)
+
+
+i := 0
+#list * {
+    write list @ i
+    i /= #list-1 /\ { write ' ' }
+    i := i + 1
+}
+writeln
