@@ -95,9 +95,10 @@ There are 7 types of statements:
 
 EMPTY           e.g. a line of whitespace. This type of statement does
                 nothing.
-EXPR            An expression. Evaluate the expression and if it is a block,
-                execute it. Otherwise, do nothing. This means string
-                literals (e.g.) on their own line are parsed as comments.
+EXPR            An expression. Evaluate the expression and if it is a
+                block, execute it. Otherwise, do nothing. This means
+                string literals (e.g.) on their own line are parsed as
+                comments.
 EXPR := EXPR    Assignment. In the symbol table, assign the (symbolic)
                 expression on the left a value of the (non-symbolic)
                 expression on the right.
@@ -140,7 +141,8 @@ Repeat loops emerge from multiplication with blocks:
         writeln 'This statement is written 5 times'
     }
 
-While loops are a little clunkier. They emerge from conditionally recursive functions.
+While loops are a little clunkier. They emerge from conditionally
+recursive functions.
 
     x := 5
     step_down := {
